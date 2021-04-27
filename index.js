@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const { response } = require("express");
 
 app.use(express.static("build"));
 app.use(cors());
@@ -21,6 +22,11 @@ let phonebook = [
   { id: 4, name: "Ada Lovelace", phone: "39-44-5323523" },
 ];
 
+const generateId = () => {
+  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
+  return maxId + 1;
+};
+
 app.get("/", (req, res) => {
   res.send("<p> hello </p>");
 });
@@ -37,6 +43,19 @@ app.get("/api/phonebook/:id", (req, res) => {
   } else {
     res.status(404).end();
   }
+});
+
+app.post("/api/phonebook/", (req, res) => {
+  const body = req.body;
+
+  const personObj = {
+    name: body.name,
+    phone: body.phone,
+    id: generateId(),
+  };
+
+  phonebook = phonebook.concat(personObj);
+  response.json(personObj);
 });
 
 app.delete("/api/phonebook/:id", (req, res) => {
