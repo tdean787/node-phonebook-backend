@@ -63,6 +63,6 @@ app.delete("/api/phonebook/:id", (req, res) => {
   res.status(204).end();
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT);
+const PORT = process.env.PORT || 3001;
+app.listen(3001);
 console.log(`running on ${PORT}`);
