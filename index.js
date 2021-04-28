@@ -1,7 +1,7 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-
-const cors = require("cors");
+const Person = require("./models/person");
 
 app.use(express.json());
 app.use(express.static("build"));
@@ -30,29 +30,48 @@ const generateId = () => {
 app.post("/api/phonebook", (req, res) => {
   const body = req.body;
 
+  //need to make sure request is application/json and wrapped in quotes for each key value pair
+  console.log(body);
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  });
+
+  console.log(person);
+
+  person.save().then((savedPerson) => {
+    res.json(savedPerson);
+  });
+  /*
   const personObj = {
     name: body.name,
     phone: body.phone,
     id: generateId(),
   };
-
-  phonebook = phonebook.concat(personObj);
-  console.log(phonebook);
-  res.json(personObj);
+*/
+  // phonebook = phonebook.concat(personObj);
+  // console.log(phonebook);
+  // res.json(personObj);
 });
 
 app.get("/api/phonebook", (request, response) => {
-  response.json(phonebook);
+  Person.find({}).then((person) => {
+    response.json(person);
+  });
 });
 
 app.get("/api/phonebook/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = phonebook.find((person) => person.id === id);
-  if (person) {
+  console.log(req.params.id);
+  Person.findById(req.params.id).then((person) => {
     res.json(person);
-  } else {
-    res.status(404).end();
-  }
+  });
+  // const id = Number(req.params.id);
+  // const person = phonebook.find((person) => person.id === id);
+  // if (person) {
+  //   res.json(person);
+  // } else {
+  //   res.status(404).end();
+  // }
 });
 
 app.delete("/api/phonebook/:id", (req, res) => {
@@ -64,5 +83,5 @@ app.delete("/api/phonebook/:id", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT);
+app.listen(3001);
 console.log(`running on ${PORT}`);
