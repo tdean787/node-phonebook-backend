@@ -8,9 +8,21 @@ DELETE http://localhost:3000/api/phonebook/1
 
 ###
 POST http://localhost:3000/api/phonebook/
+Content-Type: text/plain
+
+{
+    "name": "Bob",
+    "phone": 123-456
+}
+
+###
+GET https://node-phonebook-fullstackopen.herokuapp.com/api/phonebook/
+
+###
+POST https://node-phonebook-fullstackopen.herokuapp.com/api/phonebook/
 Content-Type: application/json
 
 {
     "name": "taylor",
-    "phone": 123-456
+    "phone": "123456"
 }

@@ -1,11 +1,14 @@
+const morgan = require("morgan");
+const { response } = require("express");
+const { format } = require("morgan");
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { response } = require("express");
 
 app.use(express.static("build"));
 app.use(cors());
 app.use(express.json());
+app.use(morgan("combined"));
 
 let phonebook = [
   {
@@ -47,6 +50,14 @@ app.get("/api/phonebook/:id", (req, res) => {
 
 app.post("/api/phonebook/", (req, res) => {
   const body = req.body;
+  console.log(req.body);
+  console.log(body.content);
+  //   return res.status(200);
+  if (!body.name) {
+    return res.status(404).json({
+      error: "no name",
+    });
+  }
 
   const personObj = {
     name: body.name,
