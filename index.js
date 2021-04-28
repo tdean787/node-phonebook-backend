@@ -8,6 +8,7 @@ const bp = require("body-parser");
 const cors = require("cors");
 
 app.use(express.json());
+app.use(express.static("build"));
 
 let phonebook = [
   {
