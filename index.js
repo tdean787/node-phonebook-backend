@@ -1,9 +1,5 @@
-const morgan = require("morgan");
-const { response } = require("express");
-const { format } = require("morgan");
 const express = require("express");
 const app = express();
-const bp = require("body-parser");
 
 const cors = require("cors");
 
