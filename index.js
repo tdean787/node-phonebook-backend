@@ -3,12 +3,11 @@ const { response } = require("express");
 const { format } = require("morgan");
 const express = require("express");
 const app = express();
+const bp = require("body-parser");
+
 const cors = require("cors");
 
-app.use(express.static("build"));
-app.use(cors());
 app.use(express.json());
-app.use(morgan("combined"));
 
 let phonebook = [
   {
@@ -26,12 +25,23 @@ let phonebook = [
 ];
 
 const generateId = () => {
-  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
+  const maxId =
+    phonebook.length > 0 ? Math.max(...phonebook.map((n) => n.id)) : 0;
   return maxId + 1;
 };
 
-app.get("/", (req, res) => {
-  res.send("<p> hello </p>");
+app.post("/api/phonebook", (req, res) => {
+  const body = req.body;
+
+  const personObj = {
+    name: body.name,
+    phone: body.phone,
+    id: generateId(),
+  };
+
+  phonebook = phonebook.concat(personObj);
+  console.log(phonebook);
+  res.json(personObj);
 });
 
 app.get("/api/phonebook", (request, response) => {
@@ -46,27 +56,6 @@ app.get("/api/phonebook/:id", (req, res) => {
   } else {
     res.status(404).end();
   }
-});
-
-app.post("/api/phonebook/", (req, res) => {
-  const body = req.body;
-  console.log(req.body);
-  console.log(body.content);
-  //   return res.status(200);
-  if (!body.name) {
-    return res.status(404).json({
-      error: "no name",
-    });
-  }
-
-  const personObj = {
-    name: body.name,
-    phone: body.phone,
-    id: generateId(),
-  };
-
-  phonebook = phonebook.concat(personObj);
-  response.json(personObj);
 });
 
 app.delete("/api/phonebook/:id", (req, res) => {

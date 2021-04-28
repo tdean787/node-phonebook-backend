@@ -12,7 +12,7 @@ Content-Type: text/plain
 
 {
     "name": "Bob",
-    "phone": 123-456
+    "phone": "123456"
 }
 
 ###
