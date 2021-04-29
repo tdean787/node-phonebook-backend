@@ -31,13 +31,10 @@ app.post("/api/phonebook", (req, res) => {
   const body = req.body;
 
   //need to make sure request is application/json and wrapped in quotes for each key value pair
-  console.log(body);
   const person = new Person({
     name: body.name,
     number: body.number,
   });
-
-  console.log(person);
 
   person.save().then((savedPerson) => {
     res.json(savedPerson);
@@ -61,7 +58,6 @@ app.get("/api/phonebook", (request, response) => {
 });
 
 app.get("/api/phonebook/:id", (req, res) => {
-  console.log(req.params.id);
   Person.findById(req.params.id).then((person) => {
     res.json(person);
   });
