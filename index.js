@@ -1,11 +1,22 @@
 require("dotenv").config();
+const { response } = require("express");
 const express = require("express");
 const app = express();
 const Person = require("./models/person");
 
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message);
+
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformmated" });
+  }
+
+  next(error);
+};
 app.use(express.json());
 app.use(express.static("build"));
 
+app.use(errorHandler);
 let phonebook = [
   {
     name: "Dan Abramov",
@@ -21,12 +32,13 @@ let phonebook = [
   { id: 4, name: "Ada Lovelace", phone: "39-44-5323523" },
 ];
 
-const generateId = () => {
+//below is obsolete - using id from mongoDB now
+/* const generateId = () => {
   const maxId =
     phonebook.length > 0 ? Math.max(...phonebook.map((n) => n.id)) : 0;
   return maxId + 1;
-};
-
+}; 
+ */
 app.post("/api/phonebook", (req, res) => {
   const body = req.body;
 
@@ -58,9 +70,18 @@ app.get("/api/phonebook", (request, response) => {
 });
 
 app.get("/api/phonebook/:id", (req, res) => {
-  Person.findById(req.params.id).then((person) => {
-    res.json(person);
-  });
+  Person.findById(req.params.id)
+    .then((person) => {
+      if (person) {
+        res.json(person);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      response.status(400).send({ error: "malformatted id" });
+    });
   // const id = Number(req.params.id);
   // const person = phonebook.find((person) => person.id === id);
   // if (person) {
@@ -71,11 +92,31 @@ app.get("/api/phonebook/:id", (req, res) => {
 });
 
 app.delete("/api/phonebook/:id", (req, res) => {
+  Person.findByIdAndRemove(req.params.id)
+    .then((result) => {
+      res.status(204).end();
+    })
+    .catch((error) => console.log(error));
+
   const id = Number(req.params.id);
   phonebook = phonebook.filter((person) => person.id !== id);
 
-  res.send({ success: "done" });
   res.status(204).end();
+});
+
+app.put("/api/phonebook/:id", (request, response, next) => {
+  const body = request.body;
+
+  console.log(body);
+  const person = {
+    name: body.name,
+    number: body.number,
+  };
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then((updatedPerson) => {
+      response.json(updatedPerson);
+    })
+    .catch((error) => next(error));
 });
 
 const PORT = process.env.PORT || 3001;
